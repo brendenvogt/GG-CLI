@@ -4,6 +4,7 @@ import argparse
 from collections import OrderedDict
 import copy
 import sys
+from ggcli.driver import plugin
 
 
 class CLIDriver(object):
@@ -44,6 +45,15 @@ class CLIDriver(object):
         self._get_command_table()
         self._get_argument_table()
         self._get_parser()
+        plugins = plugin.get_plugins()
+        for command in plugins:
+            self._add_command(command[0], command[1])
+
+        print(f"_command_table {self._command_table}")
+        print(f"_argument_table {self._argument_table}")
+
+    def _add_command(self, name, command):
+        self._command_table[name] = command
 
     # CLI Data
     def _get_cli_data(self):
@@ -120,15 +130,17 @@ class CLIDriver(object):
             the command "ggcli xyz do-this --foo bar" will have an
             args list of ``['xyz', 'do-this', '--foo', 'bar']``.
         """
+        # Get Args
         if args is None:
             args = sys.argv[1:]
+        # Initialize
         command_table = self._get_command_table()
         argument_table = self._get_argument_table()
         parser = self._get_parser()
+        # Parse Args
         args = parser.parse_args()
         print(f"command_table {command_table}")
         print(f"argument_table {argument_table}")
-        # parsed_args, remaining = parser.parse_known_args(args)
 
     @property
     def name(self):
@@ -200,5 +212,5 @@ class CLI(object):
         if self.cli_driver == None:
             self.cli_driver = CLIDriver()
 
-    def main(self):
+    def run(self):
         self.cli_driver.main()

@@ -4,7 +4,7 @@ from ggcli.driver.cli import CLI
 
 def run():
     cli = CLI()
-    cli.main()
+    cli.run()
 
 
 if __name__ == "__main__":
