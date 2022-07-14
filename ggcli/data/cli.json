@@ -1,6 +1,6 @@
 {
 	"name": "ggcli",
-	"description": "An awesome CLI.",
+	"description": "An awesome CLI!",
 	"synopsis": "ggcli [options] <command> <subcommand> [parameters]",
 	"help": "Optional parameters are shown in square brackets. Required commands and subcommands are shown in angle brackets.",
 	"options": {
@@ -12,50 +12,5 @@
 			"action": "version",
 			"help": "<p>Output the CLI version to the console.</p>"
 		}
-	},
-	"commands": [
-		{
-			"name": "git",
-			"alias": "g",
-			"description": "port to git",
-			"synopsis": "test synopsis for git test",
-			"subcommands": [
-				{
-					"name": "status",
-					"arguments": [
-						{
-							"name": "--all",
-							"required": true,
-							"help": "get all of the status",
-							"synopsis": "",
-							"choices": ["", ""],
-							"schema": {
-								"type": "array",
-								"items": {
-									"type": "string"
-								}
-							},
-							"default": []
-						}
-					]
-				}
-			],
-			"arguments": [
-				{
-					"name": "",
-					"required": true,
-					"help": "",
-					"synopsis": "",
-					"choices": ["", ""],
-					"schema": {
-						"type": "array",
-						"items": {
-							"type": "string"
-						}
-					},
-					"default": []
-				}
-			]
-		}
-	]
+	}
 }

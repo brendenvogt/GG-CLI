@@ -1,5 +1,5 @@
 from ggcli import __version__
-from ggcli.driver.cli import CLI
+from ggcli.cli.cli import CLI
 
 
 def run():
