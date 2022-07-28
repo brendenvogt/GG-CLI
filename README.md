@@ -2,9 +2,9 @@
 
 A prototype cli for every day things. GG because GG is easy to type.
 
-# Description
+## Description
 
-# Synopsis
+## Synopsis
 
 `ggcli [options] <command> <subcommand> [parameters]`
 
@@ -21,15 +21,15 @@ A prototype cli for every day things. GG because GG is easy to type.
 
 GG CLI aims to support plugins. Where users can write their own plugins and install them as needed.
 
-# Development
+## Development
 
 - clone repo
 - run command:
-    - change directory `cd ./GG-CLI/ggcli`
-    - run `python3 . [options] <command> <subcommand> [parameters]`
+  - change directory `cd ./GG-CLI/ggcli`
+  - run `python3 . [options] <command> <subcommand> [parameters]`
 - run tests:
-    - change directory `./GG-CLI`,
-    - run `pytest`
+  - change directory `./GG-CLI`,
+  - run `pytest`
 
 ## Philosophy
 
@@ -38,30 +38,28 @@ GG CLI aims to support plugins. Where users can write their own plugins and inst
 - for the commands we have a `CommandArgParser`
 - for the subcommands we have a `SubcommandArgParser`
 
-# Components
+## Components
 
-## CLIOption
+### CLIOption
 
 - `--debug`
 - `--version`
 - `--help`
 - `--verbose`
 
-## CLICommand
+### CLICommand
 
 - `plugins`
 
-## CLISubcommand
+### CLISubcommand
 
-## CLIArgument
+### CLIArgument
 
-# Todo
-
-# Test
+## Todo
 
 - parse by routes
 - look for the commands directory
 - python directory structure is the structure for things
 
-- ./commands/<command>/<subcommand>.py
-- ./commands/<command>/index.py
+- `./commands/<command>/<subcommand>.py`
+- `./commands/<command>/index.py`

@@ -3,8 +3,8 @@ from ggcli import __version__
 from ggcli.cli.data import CLIData
 from ggcli.cli.options import CLIOption
 from collections import OrderedDict
-from ggcli.commands.plugins import plugins
-from ggcli.commands.builtins import builtins
+# from ggcli.commands.plugins import plugins
+# from ggcli.commands.builtins import builtins
 from ggcli.cli.parser import MainArgParser
 import copy
 import argparse
@@ -42,6 +42,24 @@ class CLIDriver(object):
         self._parser = None
         self._get_parser()
 
+    def main(self, args=None):
+
+        # Get Args
+        args = self._get_sys_args_if_none(args)
+
+        # Parse Args - getting options, command, subcommand, and arguments
+        parsed_args, remaining = self._parser.parse_known_args(args)
+        self._handle_options(parsed_args)
+
+        LOG.debug(f"parsed_args {parsed_args}")
+        LOG.debug(f"remaining {remaining}")
+        return self._command_table[parsed_args.command](remaining, parsed_args)
+
+    def _get_sys_args_if_none(self, args):
+        if args is None:
+            args = sys.argv[1:]
+        return args
+
     # Options Table
 
     def _get_options_table(self):
@@ -72,8 +90,8 @@ class CLIDriver(object):
 
     def _build_command_table(self):
         command_table = OrderedDict()
-        for builtin in builtins.get_builtins():
-            command_table[builtin.name] = builtin
+        # for builtin in builtins.get_builtins():
+        #     command_table[builtin.name] = builtin
         return command_table
 
     # Plugins
@@ -83,10 +101,11 @@ class CLIDriver(object):
         return self._plugins
 
     def _build_plugin_table(self):
-        plugins_list = plugins.get_plugins()
-        for plugin in plugins_list:
-            self._command_table[plugin.name] = plugin
-        return plugins_list
+        # plugins_list = plugins.get_plugins()
+        # for plugin in plugins_list:
+        #     self._command_table[plugin.name] = plugin
+        # return plugins_list
+        return OrderedDict()
 
     # Parser
 
@@ -105,20 +124,6 @@ class CLIDriver(object):
             option_table=self._options_table
         )
         return parser
-
-    def main(self, args=None):
-
-        # Get Args - gets everything after ggcli
-        if args is None:
-            args = sys.argv[1:]
-
-        # Parse Args
-        parsed_args, remaining = self._parser.parse_known_args(args)
-        self._handle_options(parsed_args)
-
-        LOG.debug(f"parsed_args {parsed_args}")
-        LOG.debug(f"remaining {remaining}")
-        return self._command_table[parsed_args.command](remaining, parsed_args)
 
     def _handle_options(self, parsed_args):
         if parsed_args.debug:

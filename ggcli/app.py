@@ -1,10 +1,12 @@
-from ggcli import __version__
 from ggcli.cli.cli import CLI
+import sys
 
 
 def run():
     cli = CLI()
-    cli.run()
+    args = sys.argv[1:]
+    print(f"running with args: {args}")
+    cli.run(args)
 
 
 if __name__ == "__main__":
