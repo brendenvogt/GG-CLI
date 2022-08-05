@@ -1,7 +1,6 @@
 from setuptools import Command
 import os
 from ggcli import PACKAGE_ROOT
-from glob import glob
 import pathlib
 import ggcli.cli.driver2.model.command as c
 import importlib
