@@ -1,131 +1,51 @@
-from ast import parse
-from ggcli import __version__
-from ggcli.cli.data import CLIData
-from ggcli.cli.options import CLIOption
-from collections import OrderedDict
-# from ggcli.commands.plugins import plugins
-# from ggcli.commands.builtins import builtins
-from ggcli.cli.parser import MainArgParser
-import copy
-import argparse
 import sys
 import logging
+from ggcli.cli import command_provider
+from ggcli.cli import option_provider
+from ggcli.cli import argparser
 
 LOG = logging.getLogger(__name__)
 
 
-class CLIDriver(object):
-    '''
-    CLI Driver performs a few tasks for the CLI.
-    1. Loads CLI metadata from data/cli.json
-    2. Load Built in commands
-    2. constructs the data structures of the CLI such as arg table
-    '''
+class CLIDriver():
 
     def __init__(self) -> None:
-        # CLI Data - loaded from the data/cli.json file. Responsible for high level data like name, description, but also options definitions.
-        self._cli_data = CLIData()
 
-        # Options - build options table
-        self._options_table = None
-        self._get_options_table()
+        # Options
+        self.option_table = option_provider.instance.get()
+        print("Found options:")
+        for option_name, option in self.option_table.items():
+            print(f"- {option_name}")
 
-        # Commands - load built in commands
-        self._command_table = None
-        self._get_command_table()
+        # Commands
+        self.command_table = command_provider.instance.get()
+        print("Found commands and subcommands:")
+        for command, subcommands in self.command_table.items():
+            print(f"- {command}")
+            for subcommand in subcommands:
+                print(f"  - {subcommand.name}")
 
-        # Plugins - load plugins
-        self._plugins = None
-        self._get_plugins_table()
+        self.parser = argparser.ArgParser(description="An argparse example")
+        self.parser.add_argument(
+            '-f', '--foo', help='description', required=False, default="asfd", type=str)
+        self.parser.add_argument('--debug', action='store_true')
 
-        # Parser - create parser
-        self._parser = None
-        self._get_parser()
+# The add_argument() method
+# ArgumentParser.add_argument(name or flags...[, action][, nargs][, const][, default][, type][, choices][, required][, help][, metavar][, dest])
+# Define how a single command-line argument should be parsed. Each parameter has its own more detailed description below, but in short they are:
 
-    def main(self, args=None):
+# name or flags - Either a name or a list of option strings, e.g. foo or -f, --foo.
+# action - The basic type of action to be taken when this argument is encountered at the command line.
+# nargs - The number of command-line arguments that should be consumed.
+# const - A constant value required by some action and nargs selections.
+# default - The value produced if the argument is absent from the command line and if it is absent from the namespace object.
+# type - The type to which the command-line argument should be converted.
+# choices - A container of the allowable values for the argument.
+# required - Whether or not the command-line option may be omitted (optionals only).
+# help - A brief description of what the argument does.
+# metavar - A name for the argument in usage messages.
+# dest - The name of the attribute to be added to the object returned by parse_args().
 
-        # Get Args
-        args = self._get_sys_args_if_none(args)
-
-        # Parse Args - getting options, command, subcommand, and arguments
-        parsed_args, remaining = self._parser.parse_known_args(args)
-        self._handle_options(parsed_args)
-
-        LOG.debug(f"parsed_args {parsed_args}")
-        LOG.debug(f"remaining {remaining}")
-        return self._command_table[parsed_args.command](remaining, parsed_args)
-
-    def _get_sys_args_if_none(self, args):
-        if args is None:
-            args = sys.argv[1:]
-        return args
-
-    # Options Table
-
-    def _get_options_table(self):
-        if self._options_table is None:
-            self._options_table = self._build_options_table()
-        return self._options_table
-
-    def _build_options_table(self):
-        options_table = OrderedDict()
-        options = self._cli_data.options
-        for option in options:
-            option_params = self._copy_kwargs(options[option])
-            cli_option = CLIOption(option, option_params)
-            options_table[cli_option.name] = cli_option
-        return options_table
-
-    def _copy_kwargs(self, kwargs):
-        """
-        This used to be a compat shim for 2.6 but is now just an alias.
-        """
-        copy_kwargs = copy.copy(kwargs)
-        return copy_kwargs
-
-    def _get_command_table(self):
-        if self._command_table is None:
-            self._command_table = self._build_command_table()
-        return self._command_table
-
-    def _build_command_table(self):
-        command_table = OrderedDict()
-        # for builtin in builtins.get_builtins():
-        #     command_table[builtin.name] = builtin
-        return command_table
-
-    # Plugins
-    def _get_plugins_table(self):
-        if self._plugins == None:
-            self._plugins = self._build_plugin_table()
-        return self._plugins
-
-    def _build_plugin_table(self):
-        # plugins_list = plugins.get_plugins()
-        # for plugin in plugins_list:
-        #     self._command_table[plugin.name] = plugin
-        # return plugins_list
-        return OrderedDict()
-
-    # Parser
-
-    def _get_parser(self):
-        if self._parser == None:
-            self._parser = self._build_parser()
-        return self._parser
-
-    def _build_parser(self):
-        parser = MainArgParser(
-            command_table=self._command_table,
-            version_string=__version__,
-            prog=self._cli_data.name,
-            description=self._cli_data.description,
-            usage=self._cli_data.synopsis,
-            option_table=self._options_table
-        )
-        return parser
-
-    def _handle_options(self, parsed_args):
-        if parsed_args.debug:
-            logging.basicConfig(level=logging.DEBUG)
-            LOG.debug("Debug mode enabled")
+    def main(self, args):
+        args = vars(self.parser.parse_args())
+        print(args)
