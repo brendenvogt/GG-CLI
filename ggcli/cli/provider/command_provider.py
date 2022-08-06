@@ -1,9 +1,8 @@
-from setuptools import Command
 import os
-from ggcli import PACKAGE_ROOT
 import pathlib
-import ggcli.cli.driver2.model.command as c
 import importlib
+from ggcli import PACKAGE_ROOT
+import ggcli.cli.model.command as c
 
 
 class CommandProvider():

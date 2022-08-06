@@ -1,8 +1,8 @@
-from ggcli import PACKAGE_ROOT
-import importlib
-import pathlib
 import os
-import ggcli.cli.driver2.model.option as o
+import pathlib
+import importlib
+from ggcli import PACKAGE_ROOT
+import ggcli.cli.model.option as o
 
 
 class OptionProvider:

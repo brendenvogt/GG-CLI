@@ -7,7 +7,6 @@ class CLIData(object):
     DESCRIPTION_KEY = "description"
     SYNOPSIS_KEY = "synopsis"
     HELP_KEY = "help"
-    OPTIONS_KEY = "options"
 
     def __init__(self) -> None:
         self._loader = Loader()
@@ -22,8 +21,6 @@ class CLIData(object):
             self.SYNOPSIS_KEY, None)
         self._help = self._cli_data.get(
             self.HELP_KEY, None)
-        self._options = self._cli_data.get(
-            self.OPTIONS_KEY, None)
 
     def _get_cli_data(self):
         if self._cli_data is None:
@@ -45,7 +42,3 @@ class CLIData(object):
     @property
     def help(self):
         return self._help
-
-    @property
-    def options(self):
-        return self._options

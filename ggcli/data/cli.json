@@ -2,15 +2,5 @@
 	"name": "ggcli",
 	"description": "An awesome CLI!",
 	"synopsis": "ggcli [options] <command> <subcommand> [parameters]",
-	"help": "Optional parameters are shown in square brackets. Required commands and subcommands are shown in angle brackets.",
-	"options": {
-		"debug": {
-			"action": "store_true",
-			"help": "<p>Turn on debug logging.</p>"
-		},
-		"version": {
-			"action": "version",
-			"help": "<p>Output the CLI version to the console.</p>"
-		}
-	}
+	"help": "Optional parameters are shown in square brackets. Required commands and subcommands are shown in angle brackets."
 }

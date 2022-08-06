@@ -1,8 +1,8 @@
-import sys
 import logging
-from ggcli.cli import command_provider
-from ggcli.cli import option_provider
+from ggcli.cli.provider import command_provider
+from ggcli.cli.provider import option_provider
 from ggcli.cli import argparser
+from ggcli.cli import data
 
 LOG = logging.getLogger(__name__)
 
@@ -10,6 +10,13 @@ LOG = logging.getLogger(__name__)
 class CLIDriver():
 
     def __init__(self) -> None:
+
+        # CLI Data
+        self.data = data.CLIData()
+        print(f"name: {self.data.name}")
+        print(f"description: {self.data.description}")
+        print(f"synopsis: {self.data.synopsis}")
+        print(f"help: {self.data.help}")
 
         # Options
         self.option_table = option_provider.instance.get()
