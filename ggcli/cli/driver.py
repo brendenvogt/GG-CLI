@@ -32,7 +32,12 @@ class CLIDriver():
             for subcommand in subcommands:
                 print(f"  - {subcommand.name}")
 
-        self.parser = argparser.ArgParser(description="An argparse example")
+        self.parser = argparser.ArgParser(
+            prog=self.data.name,
+            description=self.data.description,
+            usage=self.data.synopsis
+        )
+
         self.parser.add_argument(
             '-f', '--foo', help='description', required=False, default="asfd", type=str)
         self.parser.add_argument('--debug', action='store_true')
