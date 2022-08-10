@@ -3,6 +3,7 @@ from ggcli.cli.provider import command_provider
 from ggcli.cli.provider import option_provider
 from ggcli.cli import argparser
 from ggcli.cli import data
+from ggcli import __version__
 
 LOG = logging.getLogger(__name__)
 
@@ -41,6 +42,8 @@ class CLIDriver():
         self.parser.add_argument(
             '-f', '--foo', help='description', required=False, default="asfd", type=str)
         self.parser.add_argument('--debug', action='store_true')
+        self.parser.add_argument(
+            '--version', action='version', version=f'{__version__}')
 
 # The add_argument() method
 # ArgumentParser.add_argument(name or flags...[, action][, nargs][, const][, default][, type][, choices][, required][, help][, metavar][, dest])
