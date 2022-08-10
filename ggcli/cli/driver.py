@@ -4,6 +4,7 @@ from ggcli.cli.provider import option_provider
 from ggcli.cli import argparser
 from ggcli.cli import data
 from ggcli import __version__
+import argparse
 
 LOG = logging.getLogger(__name__)
 
@@ -34,30 +35,40 @@ class Subcommand():
         self.help = help
 
 
+class Argument():
+    # TODO
+    def __init__(self) -> None:
+        pass
+
+
+class Option():
+    def __init__(self, name, short_name=None, nargs=0, func=None) -> None:
+        self.name = name
+        self.short_name = short_name
+        self.nargs = nargs
+        self.func = func
+
+
+class BasicAction(argparse.Action):
+
+    def __init__(self, option_strings, dest, nargs=None, **kwargs):
+        super().__init__(option_strings, dest, nargs=nargs, **kwargs)
+
+    def __call__(self, parser, namespace, values, option_string=None):
+        if self.nargs == 0:
+            setattr(namespace, self.dest, True)
+        if self.nargs > 0:
+            setattr(namespace, self.dest, values)
+
+
 class CLIDriver():
 
     def __init__(self) -> None:
 
         # CLI Data
         self.data = data.CLIData()
-        # print(f"name: {self.data.name}")
-        # print(f"description: {self.data.description}")
-        # print(f"synopsis: {self.data.synopsis}")
-        # print(f"help: {self.data.help}")
-
         # Options
         self.option_table = option_provider.instance.get()
-        # print("Found options:")
-        # for option_name, option in self.option_table.items():
-        #     print(f"- {option_name}")
-
-        # Commands
-        self.command_table = command_provider.instance.get()
-        # print("Found commands and subcommands:")
-        # for command, subcommands in self.command_table.items():
-        #     print(f"- {command}")
-        #     for subcommand in subcommands:
-        #         print(f"  - {subcommand.name}")
 
         self.parser = argparser.ArgParser(
             prog=self.data.name,
@@ -65,11 +76,21 @@ class CLIDriver():
             usage=self.data.synopsis
         )
 
-        # Add global flags and options
-        self.parser.add_argument(
-            '--debug', action='store_true')
-        self.parser.add_argument(
-            '--version', action='version', version=f'{__version__}')
+        options_table = [
+            Option(name="debug", short_name="d", nargs=0, func=test_index),
+            Option(name="version", nargs=0, func=test_index),
+            Option(name="verbose", short_name="v", nargs=3, func=test_index),
+            Option(name="stage", nargs=1),
+            Option(name="domain", nargs=1),
+            Option(name="realm", nargs=1)
+        ]
+        for option in options_table:
+            names = [f"--{option.name}"]
+            short_name = f"-{option.short_name}" if option.short_name else None
+            if short_name:
+                names.append(short_name)
+            self.parser.add_argument(
+                *names, action=BasicAction, nargs=option.nargs, default=None)
 
         commands_table = [
             Command(
@@ -158,9 +179,19 @@ class CLIDriver():
 # metavar - A name for the argument in usage messages.
 # dest - The name of the attribute to be added to the object returned by parse_args().
 
+
     def main(self, args):
         args = self.parser.parse_args()
+        print(args)
         try:
+            if args.version:
+                print(__version__)
+                return
+            if args.debug:
+                print("DEBUG MODE ACTIVATED")
+            if args.verbose:
+                print(
+                    f"VERBOSE MODE ACTIVATED to the level of {len(args.verbose)}")
             if "func" in args:
                 func = args.func
                 func(args)

@@ -4,7 +4,7 @@ print out the version to the console and return
 from ggcli import __version__
 
 
-def main():
+def main(args):
     print(f"{__version__}")
 
 

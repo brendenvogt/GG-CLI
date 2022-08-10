@@ -9,15 +9,7 @@ def main(args):
     # get option name
     filename = os.path.basename(__file__)
     option_name = os.path.splitext(filename)[0]
-    print(f"args: {args}")
-    print(f"setting option {option_name}")
-    flags = dict()
-    flags[option_name] = True
-    print(flags)
-    # do something
-    # return mutated state
-    # Get global state singleton
-    return {flags}
+    args[option_name] = True
 
 
 def help():

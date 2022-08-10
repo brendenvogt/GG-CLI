@@ -2,7 +2,14 @@ import os
 import pathlib
 import importlib
 from ggcli import PACKAGE_ROOT
-import ggcli.cli.model.option as o
+# import ggcli.cli.model.option as o
+
+
+class Option():
+    # TODO
+    def __init__(self, name, func) -> None:
+        self.name = name
+        self.func = func
 
 
 class OptionProvider:
@@ -19,10 +26,15 @@ class OptionProvider:
             module = importlib.util.module_from_spec(spec)
             spec.loader.exec_module(module)
 
-            option = o.Option(
-                option_path.stem,
-                getattr(module, "main", lambda: None)
+            # option = o.Option(
+            #     option_path.stem,
+            #     getattr(module, "main", lambda: None)
+            # )
+            option = Option(
+                name=option_path.stem,
+                func=getattr(module, "main", lambda: None)
             )
+
             result[option.name] = option
         return result
 
