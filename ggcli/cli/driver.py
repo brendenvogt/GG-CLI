@@ -164,5 +164,8 @@ class CLIDriver():
             if "func" in args:
                 func = args.func
                 func(args)
+            else:
+                print(args)
+                self.parser.parse_args(['-h'])
         except AttributeError as e:
             self.parser.error(f"{e}")
