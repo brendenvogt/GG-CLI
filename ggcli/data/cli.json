@@ -1,6 +1,6 @@
 {
 	"name": "ggcli",
-	"description": "An awesome CLI!",
+	"description": "An awesome CLI! GG",
 	"synopsis": "ggcli [options] <command> <subcommand> [parameters]",
 	"help": "Optional parameters are shown in square brackets. Required commands and subcommands are shown in angle brackets."
 }

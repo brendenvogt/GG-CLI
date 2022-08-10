@@ -2,15 +2,11 @@ import logging
 from ggcli.cli import data
 from ggcli import __version__
 import argparse
-from ggcli.cli.commands import foo, hello
-from ggcli.cli.options import all
+from ggcli.options.all import options_table
+from ggcli.commands.all import commands_table
 from ggcli.cli.models import Command, Subcommand, Option, Argument
 
 LOG = logging.getLogger(__name__)
-
-
-class ArgParser(argparse.ArgumentParser):
-    pass
 
 
 class BasicAction(argparse.Action):
@@ -32,24 +28,19 @@ class CLIDriver():
         # CLI Data
         self.data = data.CLIData()
 
-        self.parser = ArgParser(
+        self.parser = argparse.ArgumentParser(
             prog=self.data.name,
             description=self.data.description,
             usage=self.data.synopsis
         )
 
-        for option in all.options_table:
+        for option in options_table:
             names = [f"--{option.name}"]
             short_name = f"-{option.short_name}" if option.short_name else None
             if short_name:
                 names.append(short_name)
             self.parser.add_argument(
                 *names, action=BasicAction, nargs=option.nargs, default=None)
-
-        commands_table = [
-            foo.command,
-            hello.command,
-        ]
 
         # if theres commands
         if len(commands_table) > 0:
@@ -109,6 +100,7 @@ class CLIDriver():
 # help - A brief description of what the argument does.
 # metavar - A name for the argument in usage messages.
 # dest - The name of the attribute to be added to the object returned by parse_args().
+
 
     def main(self, args):
         args = self.parser.parse_args()
