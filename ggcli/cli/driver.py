@@ -1,52 +1,16 @@
 import logging
-from ggcli.cli.provider import command_provider
-from ggcli.cli.provider import option_provider
-from ggcli.cli import argparser
 from ggcli.cli import data
 from ggcli import __version__
 import argparse
+from ggcli.cli.commands import foo, hello
+from ggcli.cli.options import all
+from ggcli.cli.models import Command, Subcommand, Option, Argument
 
 LOG = logging.getLogger(__name__)
 
 
-def test_subcommand(args):
-    print(f"subcommand: {args}")
-
-
-def test_index(args):
-    print(f"index: {args}")
-
-
-class Command():
-    def __init__(self, name, short_name=None, index=None, subcommands=[], help="") -> None:
-        self.name = name
-        self.short_name = short_name
-        self.index = index
-        self.subcommands = subcommands
-        self.help = help
-
-
-class Subcommand():
-
-    def __init__(self, name, short_name=None, func=None, help="") -> None:
-        self.name = name
-        self.short_name = short_name
-        self.func = func
-        self.help = help
-
-
-class Argument():
-    # TODO
-    def __init__(self) -> None:
-        pass
-
-
-class Option():
-    def __init__(self, name, short_name=None, nargs=0, func=None) -> None:
-        self.name = name
-        self.short_name = short_name
-        self.nargs = nargs
-        self.func = func
+class ArgParser(argparse.ArgumentParser):
+    pass
 
 
 class BasicAction(argparse.Action):
@@ -67,24 +31,14 @@ class CLIDriver():
 
         # CLI Data
         self.data = data.CLIData()
-        # Options
-        self.option_table = option_provider.instance.get()
 
-        self.parser = argparser.ArgParser(
+        self.parser = ArgParser(
             prog=self.data.name,
             description=self.data.description,
             usage=self.data.synopsis
         )
 
-        options_table = [
-            Option(name="debug", short_name="d", nargs=0, func=test_index),
-            Option(name="version", nargs=0, func=test_index),
-            Option(name="verbose", short_name="v", nargs=3, func=test_index),
-            Option(name="stage", nargs=1),
-            Option(name="domain", nargs=1),
-            Option(name="realm", nargs=1)
-        ]
-        for option in options_table:
+        for option in all.options_table:
             names = [f"--{option.name}"]
             short_name = f"-{option.short_name}" if option.short_name else None
             if short_name:
@@ -93,31 +47,8 @@ class CLIDriver():
                 *names, action=BasicAction, nargs=option.nargs, default=None)
 
         commands_table = [
-            Command(
-                name="foo",
-                short_name="f",
-                subcommands=[
-                    Subcommand(
-                        name="bar",
-                        short_name="b",
-                        func=test_subcommand,
-                        help="This is the good old 'foo bar' function"
-                    )
-                ],
-                help="This is the good old 'foo' function"
-            ),
-            Command(
-                name="hello",
-                index=test_index,
-                subcommands=[
-                    Subcommand(
-                        name="world",
-                        func=test_subcommand,
-                        help="Ah the wonderful 'hello world' function"
-                    )
-                ],
-                help="This is the good old 'hello' function"
-            ),
+            foo.command,
+            hello.command,
         ]
 
         # if theres commands
@@ -179,10 +110,8 @@ class CLIDriver():
 # metavar - A name for the argument in usage messages.
 # dest - The name of the attribute to be added to the object returned by parse_args().
 
-
     def main(self, args):
         args = self.parser.parse_args()
-        print(args)
         try:
             if args.version:
                 print(__version__)
