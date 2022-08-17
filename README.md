@@ -32,7 +32,7 @@ Commands can have root level handlers or subcommand handlers or both, but if bot
 - `hello world` - root level handler with positional argument.
 - `hello brenden` - subcommand handler and no arguments.
 
-We would not know if `world` should be interpreted as a positional argument of the root command `hello` or if we should call the handler of the subcommand `brenden`. We might be able to define some heuristic/decision tree logic, but it is not very intuitive.
+We would not know if `world` should be interpreted as a positional argument of the root command `hello` or if we should call the handler of the subcommand `brenden`. We might be able to define some heuristic/decision tree logic, but it is not very intuitive. In the case above we would complain to the console, and ignore positional arguments in the presence of subcommands.
 
 Example Commands
 
@@ -48,10 +48,10 @@ command = Command(
     name="hello",
     index=hello_main, # handler
     arguments=[
-        Argument( # a generic argument
+        Argument( # a generic argument set as an optional argument, not a positional argument
             name="prefix",
             type=str,
-            required=False,
+            positional=False,
             default="Mr",
             help="Optional arg"
         ),

@@ -65,12 +65,12 @@ class CLIDriver():
                 if command.index:
                     # Attach it to the command parser
                     command_parser.set_defaults(func=command.index)
-                    # Add arguments. But complaining about required args if there are subcommands present.
+                    # Add arguments. But complaining about positional args if there are subcommands present.
                 for arg in command.arguments:
-                    if (arg.required):
+                    if (arg.positional):
                         if self._has_subcommands(command):
                             print(
-                                "Detected required args and subcommands, which is not supported")
+                                f"Detected positional args and subcommands, which is not supported. Ignoring the position argument: {arg.name}")
                             continue
                         command_parser.add_argument(
                             arg.name, type=arg.type, help=arg.help, nargs=None if arg.default is None else '?', default=arg.default)
@@ -104,7 +104,7 @@ class CLIDriver():
                             subcommand_parser.set_defaults(
                                 func=subcommand.func)
                             for arg in subcommand.arguments:
-                                if (arg.required):
+                                if (arg.positional):
                                     subcommand_parser.add_argument(
                                         arg.name, type=arg.type, help=arg.help, nargs=None if arg.default is None else '?', default=arg.default)
                                 else:

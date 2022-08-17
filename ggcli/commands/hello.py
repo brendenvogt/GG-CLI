@@ -22,7 +22,7 @@ command = Command(
         Argument(
             name="prefix",
             type=str,
-            required=False,
+            positional=False,
             # default="Mr",
             help="optional arg"
         ),
@@ -36,7 +36,7 @@ command = Command(
             name="lastname",
             type=str,
             # default="Vogt",
-            help="required arg"
+            help="positional arg"
         ),
         OptionalArgument(
             name="suffix",

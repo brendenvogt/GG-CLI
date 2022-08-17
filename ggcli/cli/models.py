@@ -2,10 +2,10 @@ from typing import List, Any
 
 
 class Argument():
-    def __init__(self, name: str, type: type, required: bool, default: Any = None, help=None, short_name: str = None) -> None:
+    def __init__(self, name: str, type: type, positional: bool, default: Any = None, help=None, short_name: str = None) -> None:
         self.name = name
         self.type = type
-        self.required = required
+        self.positional = positional
         self.default = default
         self.help = help
         self.short_name = short_name
