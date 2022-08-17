@@ -29,7 +29,7 @@ command = Command(
         PositionalArgument(
             name="firstname",
             type=str,
-            # default="Brenden",
+            default="Brenden",
             help="required arg"
         ),
         PositionalArgument(

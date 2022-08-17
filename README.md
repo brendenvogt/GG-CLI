@@ -2,64 +2,106 @@
 
 A prototype cli for every day things. GG because GG is easy to type.
 
-## Description
+## Structure
 
-## Synopsis
+We have the concept of options (aka global options), commands (aka root level commands), positional arguments, and optional arguments.
 
-`ggcli [options] <command> <subcommand> [parameters]`
+ `ggcli [options] <command> <subcommand> [arguments]`
 
-## Environment Variables
+- with commands as the primary handler and positional arguments
+  - `ggcli [options] <command> [command's positional arguments] [command's optional arguments]`
+- with subcommands as handlers we cannot have positional arguments without confusing the two.
+  - `ggcli [options] <command> [command's optional arguments] <subcommand> [subcommand's positional arguments] [subcommand's optional arguments]`
+  - *Note* if subcommands and command positional arguments are defined we will ignore command positional arguments in favor for subcommands.
 
 ## Options
 
-- `--debug`
-- `--version`
+Example Option
 
-## Commands
+```python
+def debug_callback(args):
+    print("debug is {args.debug}")
 
-## Plugins
+Option(name="debug", short_name="d", nargs=0, func=debug_callback)
+```
 
-GG CLI aims to support plugins. Where users can write their own plugins and install them as needed.
+## Commands, Subcommands, and Arguments
 
-## Development
+Commands can have root level handlers or subcommand handlers or both, but if both are used, then root level handlers cannot have positional arguments. For example:
 
-- clone repo
-- run command:
-  - change directory `cd ./GG-CLI/ggcli`
-  - run `python3 . [options] <command> <subcommand> [parameters]`
-- run tests:
-  - change directory `./GG-CLI`,
-  - run `pytest`
+- `hello world` - root level handler with positional argument.
+- `hello brenden` - subcommand handler and no arguments.
 
-## Philosophy
+We would not know if `world` should be interpreted as a positional argument of the root command `hello` or if we should call the handler of the subcommand `brenden`. We might be able to define some heuristic/decision tree logic, but it is not very intuitive.
 
-- command structure: `ggcli [options] <command> <subcommand> [parameters]`
-- for options and the main parsing we have `MainArgParser`
-- for the commands we have a `CommandArgParser`
-- for the subcommands we have a `SubcommandArgParser`
+Example Commands
 
-## Components
+Using command level handler
 
-### CLIOption
+``` python
 
-- `--debug`
-- `--version`
-- `--help`
-- `--verbose`
+def hello_main(args): # handler function when running the `ggcli hello` command
+    prefix = args.prefix+'.' if args.prefix is not None else ''
+    print(f"hello {prefix}{args.firstname} {args.lastname}")
 
-### CLICommand
+command = Command(
+    name="hello",
+    index=hello_main, # handler
+    arguments=[
+        Argument( # a generic argument
+            name="prefix",
+            type=str,
+            required=False,
+            default="Mr",
+            help="Optional arg"
+        ),
+        PositionalArgument( # Argument subclass that marks an argument as a positional argument. If no default and not provided it will provide an error message showing that it is required.
+            name="firstname",
+            type=str,
+            default="Brenden",
+            help="Positional arg"
+        )
+        OptionalArgument( # Argument subclass that marks an argument as a optional argument, if no default and not provided by user it will be None.
+            name="lastname",
+            type=str,
+            help="Optional arg"
+        )
+    ],
+    subcommands=[
+    ],
+    help="This is the good old 'hello' function"
+)
+```
 
-- `plugins`
+- usage: `ggcli [-h] hello [-prefix PREFIX] [firstname] [lastname]`
+- `lastname` will be `None` if not provided
+- `firstname` will be defaulted to `Brenden` if not provided. If `firstname` did not have a default it would error out if not provided.
+- This is setup as a root level handler with positional arguments and no subcommands it will call the `hello_main` handler.
 
-### CLISubcommand
+or using subcommands handlers
 
-### CLIArgument
+``` python
 
-## Todo
+command = Command(
+    name="foo",
+    short_name="f",
+    subcommands=[
+        Subcommand(
+            name="bar",
+            short_name="b",
+            func=foobar_main,
+            help="This is the good old 'foo bar' function"
+        )
+    ],
+    help="This is the good old 'foo' function"
+)
 
-- parse by routes
-- look for the commands directory
-- python directory structure is the structure for things
+```
 
-- `./commands/<command>/<subcommand>.py`
-- `./commands/<command>/index.py`
+- usage: `ggcli [-h] foo {bar,b}`
+
+## Future Features
+
+### Plugins
+
+*A naive plugin solution was removed in past commit in order to focus on the core mechanics, but plugins is still a desired feature.*
