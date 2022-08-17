@@ -4,7 +4,7 @@ A prototype cli for every day things. GG because GG is easy to type.
 
 ## Structure
 
-We have the concept of options (aka global options), commands (aka root level commands), positional arguments, and optional arguments.
+We have the concept of options (aka global options), commands (aka root level commands), subcommands (with specific subcommand handlers functions), positional arguments, and optional arguments.
 
  `ggcli [options] <command> <subcommand> [arguments]`
 
