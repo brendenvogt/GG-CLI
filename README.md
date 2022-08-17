@@ -60,7 +60,7 @@ command = Command(
             type=str,
             default="Brenden",
             help="Positional arg"
-        )
+        ),
         OptionalArgument( # Argument subclass that marks an argument as a optional argument, if no default and not provided by user it will be None.
             name="lastname",
             type=str,
