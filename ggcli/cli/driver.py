@@ -4,7 +4,7 @@ from ggcli import __version__
 import argparse
 from ggcli.options.all import options_table
 from ggcli.commands.all import commands_table
-from ggcli.cli.models import Command, Subcommand, Option, Argument
+from ggcli.cli.models import Command
 
 LOG = logging.getLogger(__name__)
 
@@ -22,6 +22,9 @@ class BasicAction(argparse.Action):
 
 
 class CLIDriver():
+
+    def _has_subcommands(self, command: Command) -> bool:
+        return command.subcommands and len(command.subcommands) > 0
 
     def __init__(self) -> None:
 
@@ -62,8 +65,25 @@ class CLIDriver():
                 if command.index:
                     # Attach it to the command parser
                     command_parser.set_defaults(func=command.index)
+                    # Add arguments. But complaining about required args if there are subcommands present.
+                for arg in command.arguments:
+                    if (arg.required):
+                        if self._has_subcommands(command):
+                            print(
+                                "Detected required args and subcommands, which is not supported")
+                            continue
+                        command_parser.add_argument(
+                            arg.name, type=arg.type, help=arg.help, nargs=None if arg.default is None else '?', default=arg.default)
+                    else:
+                        if (arg.type is bool):
+                            command_parser.add_argument(
+                                f'-{arg.short_name if arg.short_name is not None else arg.name}', f'--{arg.name}', dest=arg.name, type=arg.type, help=arg.help, default=arg.default, action=argparse.BooleanOptionalAction)
+                        else:
+                            command_parser.add_argument(
+                                f'-{arg.short_name if arg.short_name is not None else arg.name}', f'--{arg.name}', dest=arg.name, type=arg.type, help=arg.help, default=arg.default)
+                    # TODO probably conflict between subcommands and required index arguments
                 # If theres subcommands
-                if command.subcommands and len(command.subcommands) > 0:
+                if self._has_subcommands(command):
                     # Create a subcommands subparser
                     subcommands_parsers = command_parser.add_subparsers(title=f'Subcommands for \"{command.name}\"',
                                                                         description='Please type a valid subcommand',
@@ -83,24 +103,17 @@ class CLIDriver():
                             # Attach it to the subcommand parser
                             subcommand_parser.set_defaults(
                                 func=subcommand.func)
-
-
-# The add_argument() method
-# ArgumentParser.add_argument(name or flags...[, action][, nargs][, const][, default][, type][, choices][, required][, help][, metavar][, dest])
-# Define how a single command-line argument should be parsed. Each parameter has its own more detailed description below, but in short they are:
-
-# name or flags - Either a name or a list of option strings, e.g. foo or -f, --foo.
-# action - The basic type of action to be taken when this argument is encountered at the command line.
-# nargs - The number of command-line arguments that should be consumed.
-# const - A constant value required by some action and nargs selections.
-# default - The value produced if the argument is absent from the command line and if it is absent from the namespace object.
-# type - The type to which the command-line argument should be converted.
-# choices - A container of the allowable values for the argument.
-# required - Whether or not the command-line option may be omitted (optionals only).
-# help - A brief description of what the argument does.
-# metavar - A name for the argument in usage messages.
-# dest - The name of the attribute to be added to the object returned by parse_args().
-
+                            for arg in subcommand.arguments:
+                                if (arg.required):
+                                    subcommand_parser.add_argument(
+                                        arg.name, type=arg.type, help=arg.help, nargs=None if arg.default is None else '?', default=arg.default)
+                                else:
+                                    if (arg.type is bool):
+                                        subcommand_parser.add_argument(
+                                            f'-{arg.short_name if arg.short_name is not None else arg.name}', f'--{arg.name}', dest=arg.name, type=arg.type, help=arg.help, default=arg.default, action=argparse.BooleanOptionalAction)
+                                    else:
+                                        subcommand_parser.add_argument(
+                                            f'-{arg.short_name if arg.short_name is not None else arg.name}', f'--{arg.name}', dest=arg.name, type=arg.type, help=arg.help, default=arg.default)
 
     def main(self, args):
         args = self.parser.parse_args()
